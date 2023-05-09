@@ -1,4 +1,6 @@
-import {openBigPicture} from './big-picture.js'
+import {getPictures} from './api.js';
+import {openBigPicture} from './big-picture.js';
+import {showError} from './messages.js';
 
 const picturesContainer = document.querySelector('.pictures');
 const pictureTemplate = document.querySelector('#picture')
@@ -34,3 +36,4 @@ export const addPictures = (pictures) => {
   picturesContainer.appendChild(fragment);
 };
 
+getPictures(addPictures, showError);

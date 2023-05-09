@@ -1,3 +1,6 @@
+import {sendPicture} from './api.js';
+import {closeProcessing, showProcessing, showSuccess, showError} from './messages.js';
+
 const MAX_NUMBER_OF_HASH_TAGS = 5;
 const MAX_HASH_TAG_LENGTH = 20;
 const MAX_COMMENT_LENGTH = 140;
@@ -256,20 +259,21 @@ const onCloseOverlay = (event) => {
   closeOverlay();
 };
 
-const onInvalidData = (message) => {
-  submitElement.disabled = true;
-  const oldText = submitElement.textContent;
-  submitElement.textContent = message;
-  setTimeout(() => {
-    submitElement.textContent = oldText;
-    submitElement.disabled = false;
-  }, 3000);
-}
-
 const onSubmitForm = (event) => {
+  event.preventDefault();
+  
   if (!pristine.validate()) {
-    event.preventDefault();
-    onInvalidData('Неправильно заполнены поля!');
+    showError('Неправильно заполнены поля!');
+  } else {
+    const processing = showProcessing('Загружаем...');
+    sendPicture(new FormData(event.target), () => {
+      closeProcessing(processing);
+      closeOverlay();
+      showSuccess('Изображение успешно загружено', 'Круто!');
+    }, (errorMessage) => {
+      closeProcessing(processing);
+      showError('Ошибка загрузки файла', 'Загрузить другой файл');
+    });
   }
 }; 
 
