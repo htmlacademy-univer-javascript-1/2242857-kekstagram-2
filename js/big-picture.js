@@ -93,6 +93,7 @@ export const openBigPicture = (picture) => {
   
   commentsElement.textContent = '';
   numberOfLoadedComments = 0;
+  commentsLoaderElement.classList.remove('hidden');
   loadComments();
   commentsLoaderElement.addEventListener('click', onLoadComments);
   
