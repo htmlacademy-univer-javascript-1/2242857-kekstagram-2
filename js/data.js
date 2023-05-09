@@ -13,6 +13,9 @@ const MESSAGES = [
 export const NUMBER_OF_AVATARS = 6;
 export const NUMBER_OF_PICTURES = 25;
 
+const MIN_NUMBER_OF_COMMENTS = 0;
+const MAX_NUMBER_OF_COMMENTS = 60;
+
 export const generateComment = (() => {
   const commentIdGenerator = new UniqueRandomNumberGenerator(1, Number.MAX_SAFE_INTEGER);
 
@@ -49,7 +52,7 @@ export const generatePictureDescription = (() => {
     pictureDescription.description = `Описание ${descriptionNumber++}.`;
     pictureDescription.likes = getRandomNumberFromRange(15, 200);
     pictureDescription.comments = [];
-    const numberOfComments = getRandomNumberFromRange(1, 4);
+    const numberOfComments = getRandomNumberFromRange(MIN_NUMBER_OF_COMMENTS, MAX_NUMBER_OF_COMMENTS);
     for (let i = 0; i < numberOfComments; i++) {
       pictureDescription.comments.push(generateComment());
     }
