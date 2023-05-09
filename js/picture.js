@@ -8,11 +8,7 @@ let pictureDescriptions = new Map();
 const onClickHandler = (event) => {
   event.preventDefault();
   
-  let picture = event.target;
-  while (picture.nodeName !== 'A') {
-    picture = picture.parentNode;
-  }
-  
+  const picture = event.target.closest('A.picture');
   const pictureDescription = pictureDescriptions.get(picture);
   
   openBigPicture(pictureDescription);
