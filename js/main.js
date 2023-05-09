@@ -1,4 +1,5 @@
-import {NUMBER_OF_PHOTOS, generatePhotoDescription} from "./data.js";
+import {NUMBER_OF_PICTURES, generatePictureDescription} from './data.js';
+import {addPictures} from './picture.js';
 
-const photoDescriptions = Array.from({length: NUMBER_OF_PHOTOS}, generatePhotoDescription);
-
+const pictureDescriptions = Array.from({length: NUMBER_OF_PICTURES}, generatePictureDescription);
+addPictures(pictureDescriptions);
