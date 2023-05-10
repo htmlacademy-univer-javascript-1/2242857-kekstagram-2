@@ -24,7 +24,6 @@ export const UniqueRandomNumberGenerator = class {
 export const isCorrectLength = (str, maxLength) => (str.length <= maxLength);
 
 
-
 // Функция взята из интернета и доработана
 // Источник - https://www.freecodecamp.org/news/javascript-debounce-example
 export const debounce = (callback, timeoutDelay = 500) => {
@@ -43,7 +42,7 @@ export const debounce = (callback, timeoutDelay = 500) => {
     // Таким образом цикл «поставить таймаут - удалить таймаут» будет выполняться,
     // пока действие совершается чаще, чем переданная задержка timeoutDelay
   };
-}
+};
 
 // Функция взята из интернета и доработана
 // Источник - https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_throttle
@@ -66,4 +65,4 @@ export const throttle = (callback, delayBetweenFrames) => {
       lastTime = now;
     }
   };
-}
+};

@@ -77,7 +77,6 @@ const hashTagsElement = document.querySelector('.text__hashtags');
 const descriptionElement = document.querySelector('.text__description');
 
 const cancelElement = document.querySelector('.img-upload__cancel');
-const submitElement = document.querySelector('.img-upload__submit');
 
 const effectElements = document.querySelectorAll('.effects__radio');
 const effectLevelElement = document.querySelector('.img-upload__effect-level');
@@ -85,9 +84,6 @@ const effectLevelSliderElement = document.querySelector('.effect-level__slider')
 const effectLevelValueElement = document.querySelector('.effect-level__value');
 
 const pristine = new Pristine(formElement);
-
-
-
 
 
 const validateHashTags = (hashTags) => {
@@ -110,44 +106,85 @@ const validateDescription = (description) => {
   if (description.length > MAX_COMMENT_LENGTH) {
     return false;
   }
-  
+
   return true;
 };
 
 pristine.addValidator(descriptionElement, validateDescription, `Максимум ${MAX_COMMENT_LENGTH} символов!`);
 
 
+let currentFilter = null;
 
+const changeFilterValue = (value) => {
+  effectLevelValueElement.value = value;
+
+  if (currentFilter !== null && currentFilter.filter !== '') {
+    previewElement.style.filter = `${currentFilter.filter}(${value}${currentFilter.measurement})`;
+  } else {
+    previewElement.style.filter = '';
+  }
+};
+
+const changeFilter = (filter) => {
+  if (currentFilter !== null && currentFilter.effect !== '') {
+    previewElement.classList.remove(`effects__preview--${currentFilter.effect}`);
+  }
+  previewElement.style.filter = '';
+  effectLevelValueElement.value = 0;
+  effectLevelElement.classList.add('hidden');
+
+  if (filter !== null) {
+    currentFilter = filter;
+
+    if (filter.step !== 0) {
+      effectLevelElement.classList.remove('hidden');
+      effectLevelSliderElement.noUiSlider.updateOptions({
+        range: {
+          min: filter.min,
+          max: filter.max
+        },
+        start: filter.max,
+        step: filter.step
+      });
+
+      changeFilterValue(filter.max);
+    }
+
+    if (filter.effect !== '') {
+      previewElement.classList.add(`effects__preview--${currentFilter.effect}`);
+    }
+  }
+};
 
 
 const resetForm = () => {
-  pictureChoiceElement.value = null
+  pictureChoiceElement.value = null;
   scaleValueElement.value = `${SCALE_DEFAULT}%`;
   effectElements.forEach((effect) => { effect.checked = effect.value === 'none'; });
   hashTagsElement.value = '';
   descriptionElement.value = '';
-  
+
   previewElement.style.transform = '';
   changeFilter(null);
-}
+};
 
-const onScaleSmaller = (event) => {
-  let value = parseInt(scaleValueElement.value) - SCALE_STEP;
+const onScaleSmaller = () => {
+  let value = parseInt(scaleValueElement.value, 10) - SCALE_STEP;
   if (value < SCALE_MIN) {
     value = SCALE_MIN;
   }
   scaleValueElement.value = `${value}%`;
-  
+
   previewElement.style.transform = `scale(${value/100})`;
 };
 
-const onScaleBigger = (event) => {
-  let value = parseInt(scaleValueElement.value) + SCALE_STEP;
+const onScaleBigger = () => {
+  let value = parseInt(scaleValueElement.value, 10) + SCALE_STEP;
   if (value > SCALE_MAX) {
     value = SCALE_MAX;
   }
   scaleValueElement.value = `${value}%`;
-  
+
   previewElement.style.transform = `scale(${value/100})`;
 };
 
@@ -175,49 +212,6 @@ const initSlider = () => {
   });
 };
 
-let currentFilter = null;
-
-const changeFilter = (filter) => {
-  if (currentFilter !== null && currentFilter.effect !== '') {
-    previewElement.classList.remove(`effects__preview--${currentFilter.effect}`)
-  }
-  previewElement.style.filter = '';
-  effectLevelValueElement.value = 0;
-  effectLevelElement.classList.add('hidden');
-  
-  if (filter !== null) {
-    currentFilter = filter;
-    
-    if (filter.step !== 0) {
-      effectLevelElement.classList.remove('hidden');
-      effectLevelSliderElement.noUiSlider.updateOptions({
-        range: {
-          min: filter.min,
-          max: filter.max
-        },
-        start: filter.max,
-        step: filter.step
-      });
-      
-      changeFilterValue(filter.max);
-    }
-    
-    if (filter.effect !== '') {
-      previewElement.classList.add(`effects__preview--${currentFilter.effect}`)
-    }
-  }
-};
-
-const changeFilterValue = (value) => {
-  effectLevelValueElement.value = value;
-  
-  if (currentFilter !== null && currentFilter.filter !== '') {
-    previewElement.style.filter = `${currentFilter.filter}(${value}${currentFilter.measurement})`;
-  } else {
-    previewElement.style.filter = '';
-  }
-};
-
 const onUpdateEffectValue = (values) => {
   changeFilterValue(values[0]);
 };
@@ -226,23 +220,6 @@ const onChangeEffect = (event) => {
   event.preventDefault();
   changeFilter(Filters[event.target.value]);
 };
-
-const closeOverlay = () => {
-  overlayElement.classList.add('hidden');
-  document.body.classList.remove('modal-open');
-  
-  scaleSmallerElement.removeEventListener('click', onScaleSmaller);
-  scaleBiggerElement.removeEventListener('click', onScaleBigger);
-  
-  effectElements.forEach((effect) => { effect.removeEventListener('change', onChangeEffect); });
-  
-  effectLevelSliderElement.noUiSlider.off('update');
-  
-  cancelElement.removeEventListener('click', onCloseOverlay);
-  window.removeEventListener('keydown', onCloseOverlay);
-  
-  resetForm();
-}
 
 const onCloseOverlay = (event) => {
   if (
@@ -254,14 +231,32 @@ const onCloseOverlay = (event) => {
   ) {
     return false;
   }
-  
+
   event.preventDefault();
+  /* eslint-disable-next-line no-use-before-define */
   closeOverlay();
+};
+
+const closeOverlay = () => {
+  overlayElement.classList.add('hidden');
+  document.body.classList.remove('modal-open');
+
+  scaleSmallerElement.removeEventListener('click', onScaleSmaller);
+  scaleBiggerElement.removeEventListener('click', onScaleBigger);
+
+  effectElements.forEach((effect) => { effect.removeEventListener('change', onChangeEffect); });
+
+  effectLevelSliderElement.noUiSlider.off('update');
+
+  cancelElement.removeEventListener('click', onCloseOverlay);
+  window.removeEventListener('keydown', onCloseOverlay);
+
+  resetForm();
 };
 
 const onSubmitForm = (event) => {
   event.preventDefault();
-  
+
   if (!pristine.validate()) {
     showError('Неправильно заполнены поля!');
   } else {
@@ -270,31 +265,31 @@ const onSubmitForm = (event) => {
       closeProcessing(processing);
       closeOverlay();
       showSuccess('Изображение успешно загружено', 'Круто!');
-    }, (errorMessage) => {
+    }, () => {
       closeProcessing(processing);
       showError('Ошибка загрузки файла', 'Загрузить другой файл');
     });
   }
-}; 
+};
 
 const openOverlay = () => {
   overlayElement.classList.remove('hidden');
   document.body.classList.add('modal-open');
-  
+
   previewElement.src = URL.createObjectURL(pictureChoiceElement.files[0]);
-  
+
   scaleSmallerElement.addEventListener('click', onScaleSmaller);
   scaleBiggerElement.addEventListener('click', onScaleBigger);
-  
+
   effectElements.forEach((effect) => { effect.addEventListener('change', onChangeEffect); });
   effectLevelSliderElement.noUiSlider.on('update', onUpdateEffectValue);
   changeFilter(Filters.none);
-  
+
   window.addEventListener('keydown', onCloseOverlay);
   cancelElement.addEventListener('click', onCloseOverlay);
-  
+
   formElement.addEventListener('submit', onSubmitForm);
-}
+};
 
 const onChangeFile = (event) => {
   event.preventDefault();
