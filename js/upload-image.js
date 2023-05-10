@@ -281,6 +281,8 @@ const openOverlay = () => {
   overlayElement.classList.remove('hidden');
   document.body.classList.add('modal-open');
   
+  previewElement.src = URL.createObjectURL(pictureChoiceElement.files[0]);
+  
   scaleSmallerElement.addEventListener('click', onScaleSmaller);
   scaleBiggerElement.addEventListener('click', onScaleBigger);
   
