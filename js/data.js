@@ -1,4 +1,4 @@
-import {getRandomNumberFromRange, UniqueRandomNumberGenerator} from "./util.js";
+import {getRandomNumberFromRange, UniqueRandomNumberGenerator} from './util.js';
 
 const NAMES = ['Евгений', 'Иван', 'Ксения', 'Полина', 'Илья', 'Даниил', 'Аделина', 'Екатерина', 'Сергей', 'Даниэль'];
 const MESSAGES = [
